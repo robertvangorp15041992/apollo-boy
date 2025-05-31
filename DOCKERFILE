@@ -1,26 +1,27 @@
-# Dockerfile (inside your project root)
-
+# Dockerfile
 FROM python:3.12
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y wget gnupg curl \
+# Install system dependencies for Playwright Chromium
+RUN apt-get update && apt-get install -y \
+    wget curl gnupg ca-certificates \
     libglib2.0-0 libnss3 libx11-6 libxcomposite1 libxdamage1 libxext6 \
-    libxfixes3 libxrandr2 libxkbcommon0 libasound2 libatk1.0-0 libatk-bridge2.0-0 \
-    libcups2 libdbus-1-3 libgbm1 libnspr4 libpango-1.0-0 libcairo2 libatspi2.0-0 \
-    fonts-liberation libxshmfence1
+    libxfixes3 libxrandr2 libxkbcommon0 libasound2 libatk1.0-0 \
+    libatk-bridge2.0-0 libcups2 libdbus-1-3 libgbm1 libnspr4 \
+    libpango-1.0-0 libcairo2 libatspi2.0-0 fonts-liberation libxshmfence1 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy everything
+# Copy files
 COPY . .
 
-# Install Python packages
+# Install Python dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# 👇 THIS is what was missing!
-RUN pip install playwright && playwright install --with-deps
+# Install Playwright and browser dependencies
+RUN playwright install --with-deps
 
-# Set entry point
+# Run script
 CMD ["python", "main.py"]
