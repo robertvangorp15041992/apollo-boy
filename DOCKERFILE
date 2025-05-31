@@ -1,11 +1,14 @@
+# ✅ Use the official Playwright image with all deps preinstalled
 FROM mcr.microsoft.com/playwright/python:v1.42.0-jammy
 
+# Set working directory
 WORKDIR /app
+
+# Copy code to container
 COPY . .
 
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ⛳ CRUCIAL: Force Playwright to re-install Chromium + dependencies
-RUN playwright install --with-deps
-
-CMD ["python", "main.py"]
+# ✅ Run script with unbuffered output for live Railway logging
+CMD ["python", "-u", "main.py"]
