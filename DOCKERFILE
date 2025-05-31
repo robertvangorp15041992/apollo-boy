@@ -5,4 +5,7 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+# ⛳ CRUCIAL: Force Playwright to re-install Chromium + dependencies
+RUN playwright install --with-deps
+
 CMD ["python", "main.py"]
