@@ -1,14 +1,17 @@
-# ✅ Use the official Playwright image with all deps preinstalled
+# ✅ Start from official Playwright image with browser support
 FROM mcr.microsoft.com/playwright/python:v1.42.0-jammy
 
-# Set working directory
+# ✅ Set working directory
 WORKDIR /app
 
-# Copy code to container
+# ✅ Copy your app code
 COPY . .
 
-# Install Python dependencies
+# ✅ Install Python requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ✅ Run script with unbuffered output for live Railway logging
-CMD ["python", "-u", "main.py"]
+# ✅ Install missing Linux dependencies for Playwright (THIS is the missing part)
+RUN playwright install-deps
+
+# ✅ Run your script
+CMD ["python", "main.py"]
