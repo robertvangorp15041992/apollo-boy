@@ -1,7 +1,7 @@
-# main.py
+import pandas as pd
 from scraper import scrape_apollo_contacts
 from drive_upload import upload_to_drive
-import pandas as pd
+import traceback
 
 # Companies to ignore (already enriched)
 already_enriched_companies = {
@@ -38,23 +38,34 @@ already_enriched_companies = {
 }
 
 if __name__ == "__main__":
-    companies = [
-        # Apollo company profile URLs of companies NOT in already_enriched_companies
-        # Just examples below — make sure actual company names are not in the ignore list
-        ("https://app.apollo.io/#/companies/63e3b0a03d71b200014ea1a5", "Some New Company A"),
-        ("https://app.apollo.io/#/companies/60f1e91ed5d7b500017a1a95", "Some New Company B")
-    ]
+    try:
+        print("🚀 Starting Apollo scraping...")
 
-    all_contacts = []
-    for company_url, company_name in companies:
-        if company_name in already_enriched_companies:
-            print(f"⏩ Skipping {company_name}, already enriched.")
-            continue
+        companies = [
+            # Apollo company profile URLs of companies NOT in already_enriched_companies
+            ("https://app.apollo.io/#/companies/63e3b0a03d71b200014ea1a5", "Some New Company A"),
+            ("https://app.apollo.io/#/companies/60f1e91ed5d7b500017a1a95", "Some New Company B")
+        ]
 
-        contacts = scrape_apollo_contacts(company_url)
-        all_contacts.extend(contacts)
+        all_contacts = []
+        for company_url, company_name in companies:
+            if company_name in already_enriched_companies:
+                print(f"⏩ Skipping {company_name}, already enriched.")
+                continue
 
-    df = pd.DataFrame(all_contacts)
-    df.to_csv("scraped_contacts.csv", index=False)
+            print(f"🔍 Scraping contacts for: {company_name}")
+            contacts = scrape_apollo_contacts(company_url)
+            all_contacts.extend(contacts)
 
-    upload_to_drive("scraped_contacts.csv")
+        print("💾 Saving contacts to CSV...")
+        df = pd.DataFrame(all_contacts)
+        df.to_csv("scraped_contacts.csv", index=False)
+
+        print("📤 Uploading to Google Drive...")
+        upload_to_drive("scraped_contacts.csv")
+
+        print("✅ Done. All contacts scraped and uploaded.")
+
+    except Exception as e:
+        print("❌ An error occurred during scraping!")
+        traceback.print_exc()
