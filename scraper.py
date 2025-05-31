@@ -1,3 +1,4 @@
+# scraper.py
 from playwright.sync_api import sync_playwright
 import time
 
@@ -5,21 +6,23 @@ def scrape_apollo_contacts(company_url):
     contacts = []
 
     with sync_playwright() as p:
-        # 👇 Add this before launching to debug launch crashes
+        # ✅ Add --no-sandbox and --disable-setuid-sandbox flags for Railway
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--no-sandbox", "--disable-setuid-sandbox"]
+        )
         print("🌍 Trying to launch Chromium now...")
-
-        browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 
         print(f"🌐 Navigating to {company_url}")
         page.goto(company_url)
 
-        # Wait for contact section to appear
+        # Wait for contact list to load
         page.wait_for_selector("div[data-testid='contacts-section']")
 
         while True:
-            # Scrape contacts on the current page
+            # Scrape current page contacts
             elements = page.query_selector_all("div[data-testid='contact-row']")
             for el in elements:
                 try:
@@ -27,7 +30,7 @@ def scrape_apollo_contacts(company_url):
                     title = el.query_selector("div[data-testid='contact-title']").inner_text()
                     email_button = el.query_selector("button[data-testid='reveal-email-button']")
                     email_button.click()
-                    time.sleep(1)  # Wait for email to reveal
+                    time.sleep(1)
                     email = el.query_selector("a[href^='mailto:']").inner_text()
 
                     contacts.append({
@@ -39,13 +42,13 @@ def scrape_apollo_contacts(company_url):
                     print(f"⚠️ Skipping contact due to error: {e}")
                     continue
 
-            # Check if there's a "Next Page" button and it's not disabled
+            # Try to go to the next page
             next_btn = page.query_selector("button[aria-label='Next Page']")
             if next_btn and not next_btn.is_disabled():
                 next_btn.click()
-                page.wait_for_timeout(3000)  # Wait for next page to load
+                page.wait_for_timeout(3000)
             else:
-                break  # Exit the loop if no more pages
+                break
 
         browser.close()
     return contacts
