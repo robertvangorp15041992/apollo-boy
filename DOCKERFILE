@@ -1,17 +1,11 @@
-# ✅ Start from the official Playwright Python image (with Chromium)
-FROM mcr.microsoft.com/playwright/python:v1.42.0-jammy
+# Use Ubuntu 24.04 compatible Playwright image
+FROM mcr.microsoft.com/playwright/python:v1.42.0-noble
 
-# ✅ Set working directory
 WORKDIR /app
-
-# ✅ Copy all your code
 COPY . .
 
-# ✅ Install Python packages
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ✅ Install browser dependencies (THIS is CRITICAL for Railway)
-RUN playwright install-deps
-
-# ✅ Run your script
+# Start script
 CMD ["python", "main.py"]
