@@ -1,7 +1,9 @@
+import subprocess; subprocess.run(["playwright", "install", "chromium"])
 import pandas as pd
 from scraper import scrape_apollo_contacts
 from drive_upload import upload_to_drive
 import traceback
+
 
 # Companies to ignore (already enriched)
 already_enriched_companies = {
