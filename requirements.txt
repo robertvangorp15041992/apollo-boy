@@ -1,4 +1,4 @@
-playwright==1.43.0
+playwright
 pandas
 google-api-python-client
 google-auth
