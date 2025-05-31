@@ -1,16 +1,16 @@
-# ✅ Start from official Playwright image with browser support
+# ✅ Start from the official Playwright Python image (with Chromium)
 FROM mcr.microsoft.com/playwright/python:v1.42.0-jammy
 
 # ✅ Set working directory
 WORKDIR /app
 
-# ✅ Copy your app code
+# ✅ Copy all your code
 COPY . .
 
-# ✅ Install Python requirements
+# ✅ Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ✅ Install missing Linux dependencies for Playwright (THIS is the missing part)
+# ✅ Install browser dependencies (THIS is CRITICAL for Railway)
 RUN playwright install-deps
 
 # ✅ Run your script
